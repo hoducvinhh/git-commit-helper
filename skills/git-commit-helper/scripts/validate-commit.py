@@ -82,6 +82,12 @@ def validate_commit_message(
             "Commit header does not match Conventional Commits format: '<type>(<scope>)?: <description>'"
         )
         suggestions.append(
+            f"Example valid format: feat(core): add feature description"
+        )
+    else:
+        raw_type = match.group(1)
+        raw_scope = match.group(2)
+        raw_bang = match.group(3)
 
 
 if __name__ == '__main__':
