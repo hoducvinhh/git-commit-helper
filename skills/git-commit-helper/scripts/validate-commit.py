@@ -13,6 +13,19 @@ import re
 import sys
 
 DEFAULT_ALLOWED_TYPES = [
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "test",
+    "build",
+    "ci",
+    "chore",
+    "revert",
+]
+
 
 
 if __name__ == '__main__':
