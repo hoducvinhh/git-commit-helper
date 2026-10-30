@@ -158,6 +158,21 @@ def validate_commit_message(
         # Parse subsequent sections
         body_lines = []
         footer_lines = []
+        in_footer_section = False
+
+        for i, line in enumerate(lines[2:], start=3):
+            # Check for footer match
+            footer_match = FOOTER_REGEX.match(line)
+            if footer_match:
+                in_footer_section = True
+                token = footer_match.group(1)
+                value = (footer_match.group(2) or footer_match.group(3) or "").strip()
+                footers.append({"token": token, "value": value})
+                if token in ("BREAKING CHANGE", "BREAKING-CHANGE"):
+                    is_breaking = True
+                    breaking_desc = value
+            elif in_footer_section:
+                # Continuation line of footer or another footer
 
 
 if __name__ == '__main__':
