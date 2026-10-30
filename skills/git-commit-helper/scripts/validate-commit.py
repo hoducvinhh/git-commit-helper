@@ -26,6 +26,11 @@ DEFAULT_ALLOWED_TYPES = [
     "revert",
 ]
 
+# Conventional Commit Header regex
+# Groups: 1=type, 3=scope, 4=breaking '!', 5=description
+HEADER_REGEX = re.compile(r"^([a-zA-Z0-9_-]+)(?:\(([a-zA-Z0-9_\-./]+)\))?(!)?:\s*(.*)$")
+
+# Footer token regex: either "BREAKING CHANGE:" or "TOKEN: " or "TOKEN #"
 
 
 if __name__ == '__main__':
