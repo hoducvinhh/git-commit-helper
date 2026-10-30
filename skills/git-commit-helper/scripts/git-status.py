@@ -114,6 +114,21 @@ def detect_git_status(repo_path="."):
     # porcelain=v1 with -z uses NUL as record separator
     code_st, out_st, _ = run_git_cmd(["status", "--porcelain=v1", "-z", "-u"], repo_root)
     
+    staged = []
+    unstaged = []
+    untracked = []
+    conflicted = []
+
+    status_map = {
+        "M": "modified",
+        "A": "added",
+        "D": "deleted",
+        "R": "renamed",
+        "C": "copied",
+        "U": "updated-unmerged",
+        "?": "untracked",
+    }
+
 
 
 if __name__ == '__main__':
