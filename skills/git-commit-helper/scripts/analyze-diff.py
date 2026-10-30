@@ -148,6 +148,8 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
         first_line = lines[0] if lines else ""
         file_path = ""
         m = re.match(r"diff --git a/(.*?) b/(.*)", first_line.strip())
+        if m:
+            file_path = m.group(2)
 
 
 if __name__ == '__main__':
