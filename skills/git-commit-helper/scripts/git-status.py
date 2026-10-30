@@ -58,6 +58,11 @@ def detect_git_status(repo_path="."):
     _, git_dir_raw, _ = run_git_cmd(["rev-parse", "--git-dir"], repo_root)
     git_dir = os.path.abspath(os.path.join(repo_root, git_dir_raw.strip())) if git_dir_raw.strip() else None
 
+    # 4. Check unborn branch (empty repo with no commits)
+    code_head, head_hash, _ = run_git_cmd(["rev-parse", "HEAD"], repo_root)
+    is_unborn = (code_head != 0)
+    head_commit = head_hash.strip() if not is_unborn else None
+
 
 
 if __name__ == '__main__':
