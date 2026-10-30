@@ -127,6 +127,12 @@ def validate_commit_message(
                     f"Remove period: '{raw_type}{reconstructed_scope}{reconstructed_bang}: {clean_desc}'"
                 )
 
+            # Check lowercase starting letter
+            if desc_trimmed[0].isupper():
+                warnings.append(
+                    f"Description starts with an uppercase letter '{desc_trimmed[0]}'. Conventional Commits prefers lowercase imperative mood."
+                )
+
 
 if __name__ == '__main__':
     pass
