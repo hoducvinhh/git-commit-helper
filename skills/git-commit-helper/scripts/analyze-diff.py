@@ -181,6 +181,35 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
 
         # Check line limits
         chunk_lines = chunk_text.splitlines()
+        remaining_quota = max_diff_lines - accumulated_lines
+
+        if remaining_quota <= 0:
+            truncated = True
+            diff_display = "[DIFF CONTENT TRUNCATED DUE TO LINE LIMIT]"
+        elif len(chunk_lines) > remaining_quota:
+            truncated = True
+            diff_display = "\n".join(chunk_lines[:remaining_quota]) + "\n[DIFF TRUNCATED]"
+            accumulated_lines += remaining_quota
+        else:
+            diff_display = chunk_text.rstrip()
+            accumulated_lines += len(chunk_lines)
+
+        files_result.append({
+            "path": file_path,
+            "status": status,
+            "insertions": ins,
+            "deletions": dels,
+            "is_binary": is_bin,
+            "diff": diff_display,
+        })
+
+    # Also catch any files in numstat that didn't have diff text (e.g., pure binary without diff)
+    covered_paths = {f["path"] for f in files_result}
+    for f_path, s_info in file_stats.items():
+        if f_path not in covered_paths:
+            total_insertions += s_info["insertions"]
+            total_deletions += s_info["deletions"]
+            files_result.append({
 
 
 if __name__ == '__main__':
