@@ -167,6 +167,8 @@ def detect_git_status(repo_path="."):
                     "worktree_status": y,
                 })
             elif x == "?" and y == "?":
+                untracked.append(path)
+            else:
 
 
 if __name__ == '__main__':
