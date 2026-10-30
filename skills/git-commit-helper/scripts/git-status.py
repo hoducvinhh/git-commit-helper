@@ -71,6 +71,12 @@ def detect_git_status(repo_path="."):
         _, ref_name, _ = run_git_cmd(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
         branch = ref_name.strip() if ref_name.strip() else "HEAD (detached)"
 
+    # 6. Detect in-progress states
+    in_progress = None
+    if git_dir and os.path.exists(git_dir):
+        if os.path.exists(os.path.join(git_dir, "MERGE_HEAD")):
+            in_progress = "merge"
+        elif (
 
 
 if __name__ == '__main__':
