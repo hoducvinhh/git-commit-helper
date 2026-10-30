@@ -134,6 +134,20 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
     raw_file_chunks = []
     if raw_diff:
         chunks = raw_diff.split("diff --git ")
+        for chunk in chunks:
+            if chunk.strip():
+                raw_file_chunks.append("diff --git " + chunk)
+
+    total_diff_lines = len(raw_diff.splitlines()) if raw_diff else 0
+    accumulated_lines = 0
+    truncated = False
+
+    for chunk in raw_file_chunks:
+        # Extract file paths from "diff --git a/PATH b/PATH"
+        lines = chunk.splitlines(keepends=True)
+        first_line = lines[0] if lines else ""
+        file_path = ""
+        m = re.match(r"diff --git a/(.*?) b/(.*)", first_line.strip())
 
 
 if __name__ == '__main__':
