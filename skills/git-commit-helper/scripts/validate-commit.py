@@ -92,6 +92,14 @@ def validate_commit_message(
 
         parsed_type = raw_type
         parsed_scope = raw_scope
+        parsed_desc = raw_desc
+        if raw_bang == "!":
+            is_breaking = True
+
+        # Check type validity
+        if raw_type.lower() not in [t.lower() for t in allowed_types]:
+            errors.append(
+                f"Unknown commit type '{raw_type}'. Allowed types are: {', '.join(allowed_types)}"
 
 
 if __name__ == '__main__':
