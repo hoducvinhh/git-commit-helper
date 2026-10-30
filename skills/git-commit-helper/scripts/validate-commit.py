@@ -100,6 +100,10 @@ def validate_commit_message(
         if raw_type.lower() not in [t.lower() for t in allowed_types]:
             errors.append(
                 f"Unknown commit type '{raw_type}'. Allowed types are: {', '.join(allowed_types)}"
+            )
+        elif raw_type != raw_type.lower():
+            errors.append(f"Commit type '{raw_type}' must be lowercase.")
+            suggestions.append(f"Change '{raw_type}' to '{raw_type.lower()}'")
 
 
 if __name__ == '__main__':
