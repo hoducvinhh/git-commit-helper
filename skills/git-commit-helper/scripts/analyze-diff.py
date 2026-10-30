@@ -16,6 +16,8 @@ import sys
 
 # Regex patterns for detecting and redacting sensitive credentials
 SECRET_PATTERNS = [
+    # AWS Access Key ID
+    (re.compile(r"\b(AKIA[0-9A-Z]{16})\b"), "[REDACTED_AWS_KEY]"),
 
 
 if __name__ == '__main__':
