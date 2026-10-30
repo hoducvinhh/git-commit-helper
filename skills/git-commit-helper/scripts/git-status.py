@@ -155,6 +155,18 @@ def detect_git_status(repo_path="."):
                 if i < len(raw_items):
                     orig_path = raw_items[i]
 
+            # Conflict checking
+            if (
+                (x == "U" or y == "U")
+                or (x == "A" and y == "A")
+                or (x == "D" and y == "D")
+            ):
+                conflicted.append({
+                    "path": path,
+                    "index_status": x,
+                    "worktree_status": y,
+                })
+            elif x == "?" and y == "?":
 
 
 if __name__ == '__main__':
