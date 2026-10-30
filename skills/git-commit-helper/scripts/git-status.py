@@ -63,6 +63,14 @@ def detect_git_status(repo_path="."):
     is_unborn = (code_head != 0)
     head_commit = head_hash.strip() if not is_unborn else None
 
+    # 5. Get current branch
+    _, branch, _ = run_git_cmd(["branch", "--show-current"], repo_root)
+    branch = branch.strip()
+    if not branch:
+        # Might be detached HEAD or unborn branch
+        _, ref_name, _ = run_git_cmd(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
+        branch = ref_name.strip() if ref_name.strip() else "HEAD (detached)"
+
 
 
 if __name__ == '__main__':
