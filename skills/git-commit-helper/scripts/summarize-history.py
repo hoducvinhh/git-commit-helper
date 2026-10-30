@@ -78,6 +78,31 @@ def summarize_history(repo_path=".", limit=50, branch=None):
         cmd.append(branch)
 
     code_log, out_log, _ = run_git_cmd(cmd, abs_path)
+    if code_log != 0 or not out_log.strip():
+        return {
+            "is_git_repository": True,
+            "is_unborn": False,
+            "total_commits": 0,
+            "conventional_count": 0,
+            "conventional_rate": 0.0,
+            "types_distribution": {},
+            "scopes_distribution": {},
+            "breaking_count": 0,
+            "commits": [],
+        }
+
+    records = out_log.strip().split("\x1e")
+    commits = []
+    types_count = {}
+    scopes_count = {}
+    authors_count = {}
+    conventional_count = 0
+    breaking_count = 0
+
+    for rec in records:
+        rec = rec.strip()
+        if not rec:
+            continue
 
 
 if __name__ == '__main__':
