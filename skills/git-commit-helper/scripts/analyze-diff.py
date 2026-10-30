@@ -90,6 +90,24 @@ def parse_numstat(numstat_output: str) -> dict:
             deletions = int(del_s) if not is_binary else 0
             file_stats[clean_path] = {
                 "raw_path": path,
+                "insertions": insertions,
+                "deletions": deletions,
+                "is_binary": is_binary,
+            }
+    return file_stats
+
+
+def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=True):
+    """Analyzes git diff and returns structured details with stats and redaction."""
+    abs_path = os.path.abspath(repo_path)
+    if not os.path.exists(abs_path):
+        return {
+            "is_git_repository": False,
+            "error": f"Path does not exist: {abs_path}",
+        }
+
+    # Verify git repo
+    code, out, _ = run_git_cmd(["rev-parse", "--is-inside-work-tree"], abs_path)
 
 
 if __name__ == '__main__':
