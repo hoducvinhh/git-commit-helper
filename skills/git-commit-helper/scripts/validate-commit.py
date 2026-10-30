@@ -58,6 +58,30 @@ def validate_commit_message(
             "is_breaking": False,
             "breaking_description": None,
             "body": None,
+            "footers": [],
+            "errors": ["Commit message cannot be empty."],
+            "warnings": [],
+            "suggestions": ["Provide a commit message in the format: feat(scope): description"],
+        }
+
+    lines = message.splitlines()
+    header = lines[0].strip()
+
+    parsed_type = None
+    parsed_scope = None
+    parsed_desc = None
+    is_breaking = False
+    breaking_desc = None
+    body = None
+    footers = []
+
+    # 1. Header structural match
+    match = HEADER_REGEX.match(header)
+    if not match:
+        errors.append(
+            "Commit header does not match Conventional Commits format: '<type>(<scope>)?: <description>'"
+        )
+        suggestions.append(
 
 
 if __name__ == '__main__':
