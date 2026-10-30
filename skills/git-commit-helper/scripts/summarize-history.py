@@ -134,6 +134,11 @@ def summarize_history(repo_path=".", limit=50, branch=None):
             if c_scope:
                 scopes_count[c_scope] = scopes_count.get(c_scope, 0) + 1
 
+        commits.append({
+            "hash": c_hash[:8],
+            "full_hash": c_hash,
+            "author": c_author,
+
 
 if __name__ == '__main__':
     pass
