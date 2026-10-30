@@ -88,6 +88,10 @@ def validate_commit_message(
         raw_type = match.group(1)
         raw_scope = match.group(2)
         raw_bang = match.group(3)
+        raw_desc = match.group(4)
+
+        parsed_type = raw_type
+        parsed_scope = raw_scope
 
 
 if __name__ == '__main__':
