@@ -20,6 +20,9 @@ SECRET_PATTERNS = [
     (re.compile(r"\b(AKIA[0-9A-Z]{16})\b"), "[REDACTED_AWS_KEY]"),
     # GitHub Personal Access Token
     (re.compile(r"\b(gh[pousr]_[A-Za-z0-9_]{36,255})\b"), "[REDACTED_GITHUB_TOKEN]"),
+    # Slack Token
+    (re.compile(r"\b(xox[baprs]-[0-9A-Za-z-]{10,})\b"), "[REDACTED_SLACK_TOKEN]"),
+    # Private Key Headers
 
 
 if __name__ == '__main__':
