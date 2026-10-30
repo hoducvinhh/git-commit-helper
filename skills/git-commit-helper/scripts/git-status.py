@@ -98,6 +98,18 @@ def detect_git_status(repo_path="."):
         )
         if code_up == 0 and up_branch.strip():
             upstream = up_branch.strip()
+            code_counts, counts, _ = run_git_cmd(
+                ["rev-list", "--left-right", "--count", "HEAD...@{u}"], repo_root
+            )
+            if code_counts == 0 and counts.strip():
+                parts = counts.strip().split()
+                if len(parts) == 2:
+                    try:
+                        ahead = int(parts[0])
+                        behind = int(parts[1])
+                    except ValueError:
+                        pass
+
 
 
 if __name__ == '__main__':
