@@ -33,6 +33,23 @@ def run_git_cmd(args, repo_path=None):
         return -1, "", str(e)
 
 
+def detect_git_status(repo_path="."):
+    """Detects comprehensive Git status and returns a dictionary."""
+    abs_path = os.path.abspath(repo_path)
+    if not os.path.exists(abs_path):
+        return {
+            "is_git_repository": False,
+            "error": f"Path does not exist: {abs_path}",
+        }
+
+    # 1. Check if inside git repo
+    code, out, _ = run_git_cmd(["rev-parse", "--is-inside-work-tree"], abs_path)
+    if code != 0 or out.strip().lower() != "true":
+        return {
+            "is_git_repository": False,
+            "error": "Not a git repository (or any of the parent directories).",
+        }
+
 
 
 if __name__ == '__main__':
