@@ -73,6 +73,15 @@ def parse_numstat(numstat_output: str) -> dict:
     for line in numstat_output.splitlines():
         if not line.strip():
             continue
+        parts = line.split("\t")
+        if len(parts) >= 3:
+            add_s, del_s, path = parts[0], parts[1], parts[2]
+            # Handle renames in numstat: "old => new" or "prefix/{old => new}/suffix"
+            clean_path = path
+            if "=>" in path:
+                # If path contains rename notation
+                clean_path = path.split("=>")[-1].strip().rstrip("}").strip()
+                if "{" in path and "}" in path:
 
 
 if __name__ == '__main__':
