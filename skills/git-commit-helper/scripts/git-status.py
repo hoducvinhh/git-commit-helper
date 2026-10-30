@@ -85,6 +85,9 @@ def detect_git_status(repo_path="."):
             in_progress = "cherry-pick"
         elif os.path.exists(os.path.join(git_dir, "REVERT_HEAD")):
             in_progress = "revert"
+        elif os.path.exists(os.path.join(git_dir, "BISECT_LOG")):
+            in_progress = "bisect"
+
 
 
 if __name__ == '__main__':
