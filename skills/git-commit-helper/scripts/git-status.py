@@ -129,6 +129,32 @@ def detect_git_status(repo_path="."):
         "?": "untracked",
     }
 
+    if code_st == 0 and out_st:
+        # Split records by NUL
+        raw_items = out_st.split("\0")
+        i = 0
+        while i < len(raw_items):
+            item = raw_items[i]
+            if not item:
+                i += 1
+                continue
+            
+            # Format: XY PATH
+            if len(item) < 3:
+                i += 1
+                continue
+
+            x = item[0]
+            y = item[1]
+            path = item[3:]
+
+            # If rename/copy in porcelain -z, the next item is the source path
+            orig_path = None
+            if x in ("R", "C") or y in ("R", "C"):
+                i += 1
+                if i < len(raw_items):
+                    orig_path = raw_items[i]
+
 
 
 if __name__ == '__main__':
