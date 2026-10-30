@@ -50,6 +50,10 @@ def detect_git_status(repo_path="."):
             "error": "Not a git repository (or any of the parent directories).",
         }
 
+    # 2. Get repository root
+    _, repo_root, _ = run_git_cmd(["rev-parse", "--show-toplevel"], abs_path)
+    repo_root = repo_root.strip() if repo_root.strip() else abs_path
+
 
 
 if __name__ == '__main__':
