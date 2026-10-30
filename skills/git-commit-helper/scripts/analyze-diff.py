@@ -153,6 +153,35 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
         else:
             file_path = "unknown"
 
+        # Determine file status (new file, deleted file, rename, modified)
+        status = "modified"
+        if "new file mode" in chunk:
+            status = "added"
+        elif "deleted file mode" in chunk:
+            status = "deleted"
+        elif "rename from" in chunk or "similarity index" in chunk:
+            status = "renamed"
+
+        is_bin = ("Binary files differ" in chunk) or ("GIT binary patch" in chunk)
+        stat_info = file_stats.get(file_path, {})
+        ins = stat_info.get("insertions", 0)
+        dels = stat_info.get("deletions", 0)
+        if not is_bin:
+            is_bin = stat_info.get("is_binary", False)
+
+        total_insertions += ins
+        total_deletions += dels
+
+        # Apply redaction if enabled
+        chunk_text = chunk
+        if do_redact:
+            chunk_text, redacted = redact_secrets(chunk_text)
+            if redacted:
+                any_redacted = True
+
+        # Check line limits
+        chunk_lines = chunk_text.splitlines()
+
 
 if __name__ == '__main__':
     pass
