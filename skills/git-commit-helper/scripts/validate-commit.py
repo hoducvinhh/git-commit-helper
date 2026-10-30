@@ -34,6 +34,30 @@ HEADER_REGEX = re.compile(r"^([a-zA-Z0-9_-]+)(?:\(([a-zA-Z0-9_\-./]+)\))?(!)?:\s
 FOOTER_REGEX = re.compile(r"^(BREAKING CHANGE|BREAKING-CHANGE|[a-zA-Z0-9_-]+)(?::\s*(.*)| #([0-9]+.*))$")
 
 
+def validate_commit_message(
+    message: str,
+    allowed_types=None,
+    max_header_length=72,
+    strict=False,
+) -> dict:
+    if allowed_types is None:
+        allowed_types = DEFAULT_ALLOWED_TYPES
+
+    errors = []
+    warnings = []
+    suggestions = []
+
+    clean_message = message.strip()
+    if not clean_message:
+        return {
+            "valid": False,
+            "header": "",
+            "type": None,
+            "scope": None,
+            "description": None,
+            "is_breaking": False,
+            "breaking_description": None,
+            "body": None,
 
 
 if __name__ == '__main__':
