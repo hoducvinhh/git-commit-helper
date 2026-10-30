@@ -143,6 +143,21 @@ def validate_commit_message(
     if len(header) > max_header_length:
         warnings.append(
             f"Commit header length ({len(header)}) exceeds recommended maximum ({max_header_length} chars)."
+        )
+    if len(header) > 100:
+        errors.append(
+            f"Commit header length ({len(header)}) exceeds hard limit of 100 characters."
+        )
+
+    # 3. Body & Footer checks (if multiline)
+    if len(lines) > 1:
+        # Check blank line after header
+        if lines[1].strip() != "":
+            errors.append("Second line of commit message must be blank (separating header from body).")
+
+        # Parse subsequent sections
+        body_lines = []
+        footer_lines = []
 
 
 if __name__ == '__main__':
