@@ -77,6 +77,10 @@ def detect_git_status(repo_path="."):
         if os.path.exists(os.path.join(git_dir, "MERGE_HEAD")):
             in_progress = "merge"
         elif (
+            os.path.exists(os.path.join(git_dir, "rebase-merge"))
+            or os.path.exists(os.path.join(git_dir, "rebase-apply"))
+        ):
+            in_progress = "rebase"
 
 
 if __name__ == '__main__':
