@@ -58,6 +58,26 @@ def summarize_history(repo_path=".", limit=50, branch=None):
             "is_git_repository": True,
             "is_unborn": True,
             "total_commits": 0,
+            "conventional_count": 0,
+            "conventional_rate": 0.0,
+            "types_distribution": {},
+            "scopes_distribution": {},
+            "breaking_count": 0,
+            "commits": [],
+        }
+
+    # Format: hash %x1f author_name %x1f author_email %x1f date_iso %x1f subject %x1e
+    # %x1f = Unit Separator, %x1e = Record Separator
+    cmd = [
+        "log",
+        f"--max-count={limit}",
+        "--format=%H%x1f%an%x1f%ae%x1f%ad%x1f%s%x1e",
+        "--date=short",
+    ]
+    if branch:
+        cmd.append(branch)
+
+    code_log, out_log, _ = run_git_cmd(cmd, abs_path)
 
 
 if __name__ == '__main__':
