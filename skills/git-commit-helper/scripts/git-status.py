@@ -81,6 +81,8 @@ def detect_git_status(repo_path="."):
             or os.path.exists(os.path.join(git_dir, "rebase-apply"))
         ):
             in_progress = "rebase"
+        elif os.path.exists(os.path.join(git_dir, "CHERRY_PICK_HEAD")):
+            in_progress = "cherry-pick"
 
 
 if __name__ == '__main__':
