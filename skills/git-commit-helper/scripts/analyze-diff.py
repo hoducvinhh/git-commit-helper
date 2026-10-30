@@ -14,6 +14,9 @@ import re
 import subprocess
 import sys
 
+# Regex patterns for detecting and redacting sensitive credentials
+SECRET_PATTERNS = [
+
 
 if __name__ == '__main__':
     pass
