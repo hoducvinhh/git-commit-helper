@@ -61,6 +61,18 @@ def redact_secrets(text: str) -> tuple[str, bool]:
     result = text
     for pattern, replacement in SECRET_PATTERNS:
         new_result, count = pattern.subn(replacement, result)
+        if count > 0:
+            redacted = True
+            result = new_result
+    return result, redacted
+
+
+def parse_numstat(numstat_output: str) -> dict:
+    """Parses `git diff --numstat` output into per-file insertions, deletions, and binary status."""
+    file_stats = {}
+    for line in numstat_output.splitlines():
+        if not line.strip():
+            continue
 
 
 if __name__ == '__main__':
