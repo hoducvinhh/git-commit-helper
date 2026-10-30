@@ -31,6 +31,9 @@ DEFAULT_ALLOWED_TYPES = [
 HEADER_REGEX = re.compile(r"^([a-zA-Z0-9_-]+)(?:\(([a-zA-Z0-9_\-./]+)\))?(!)?:\s*(.*)$")
 
 # Footer token regex: either "BREAKING CHANGE:" or "TOKEN: " or "TOKEN #"
+FOOTER_REGEX = re.compile(r"^(BREAKING CHANGE|BREAKING-CHANGE|[a-zA-Z0-9_-]+)(?::\s*(.*)| #([0-9]+.*))$")
+
+
 
 
 if __name__ == '__main__':
