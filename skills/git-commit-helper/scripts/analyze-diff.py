@@ -118,6 +118,22 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
 
     # 1. Fetch numstat
     _, numstat_out, _ = run_git_cmd(["diff"] + diff_flag + ["--numstat"], abs_path)
+    file_stats = parse_numstat(numstat_out)
+
+    # 2. Fetch full raw diff
+    _, raw_diff, _ = run_git_cmd(
+        ["diff"] + diff_flag + ["--no-color", "-U3"], abs_path
+    )
+
+    any_redacted = False
+    files_result = []
+    total_insertions = 0
+    total_deletions = 0
+
+    # Split diff by "diff --git a/"
+    raw_file_chunks = []
+    if raw_diff:
+        chunks = raw_diff.split("diff --git ")
 
 
 if __name__ == '__main__':
