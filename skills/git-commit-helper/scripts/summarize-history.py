@@ -103,6 +103,26 @@ def summarize_history(repo_path=".", limit=50, branch=None):
         rec = rec.strip()
         if not rec:
             continue
+        fields = rec.split("\x1f")
+        if len(fields) < 5:
+            continue
+
+        c_hash = fields[0]
+        c_author = fields[1]
+        c_email = fields[2]
+        c_date = fields[3]
+        c_subject = fields[4]
+
+        authors_count[c_author] = authors_count.get(c_author, 0) + 1
+
+        match = HEADER_REGEX.match(c_subject)
+        is_conv = False
+        c_type = None
+        c_scope = None
+        is_breaking = False
+
+        if match:
+            is_conv = True
 
 
 if __name__ == '__main__':
