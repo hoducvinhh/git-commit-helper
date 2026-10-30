@@ -43,6 +43,21 @@ def summarize_history(repo_path=".", limit=50, branch=None):
             "error": f"Path does not exist: {abs_path}",
         }
 
+    # Verify git repository
+    code, out, _ = run_git_cmd(["rev-parse", "--is-inside-work-tree"], abs_path)
+    if code != 0 or out.strip().lower() != "true":
+        return {
+            "is_git_repository": False,
+            "error": "Not a git repository (or any of the parent directories).",
+        }
+
+    # Check unborn status
+    code_head, _, _ = run_git_cmd(["rev-parse", "HEAD"], abs_path)
+    if code_head != 0:
+        return {
+            "is_git_repository": True,
+            "is_unborn": True,
+            "total_commits": 0,
 
 
 if __name__ == '__main__':
