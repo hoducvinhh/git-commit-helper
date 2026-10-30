@@ -169,6 +169,16 @@ def detect_git_status(repo_path="."):
             elif x == "?" and y == "?":
                 untracked.append(path)
             else:
+                # Staged check
+                if x in ("M", "A", "D", "R", "C"):
+                    entry = {
+                        "path": path,
+                        "status": status_map.get(x, x),
+                    }
+                    if orig_path:
+                        entry["orig_path"] = orig_path
+                    staged.append(entry)
+
 
 
 if __name__ == '__main__':
