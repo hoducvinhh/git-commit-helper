@@ -115,6 +115,17 @@ def validate_commit_message(
         # Check description
         if not raw_desc or not raw_desc.strip():
             errors.append("Commit description cannot be empty.")
+        else:
+            desc_trimmed = raw_desc.strip()
+            # Check trailing period
+            if desc_trimmed.endswith("."):
+                errors.append("Commit description must not end with a period '.'.")
+                clean_desc = desc_trimmed.rstrip(".")
+                reconstructed_scope = f"({raw_scope})" if raw_scope else ""
+                reconstructed_bang = "!" if raw_bang else ""
+                suggestions.append(
+                    f"Remove period: '{raw_type}{reconstructed_scope}{reconstructed_bang}: {clean_desc}'"
+                )
 
 
 if __name__ == '__main__':
