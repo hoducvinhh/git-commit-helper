@@ -88,6 +88,16 @@ def detect_git_status(repo_path="."):
         elif os.path.exists(os.path.join(git_dir, "BISECT_LOG")):
             in_progress = "bisect"
 
+    # 7. Check upstream branch and ahead/behind counts
+    upstream = None
+    ahead = 0
+    behind = 0
+    if not is_unborn:
+        code_up, up_branch, _ = run_git_cmd(
+            ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"], repo_root
+        )
+        if code_up == 0 and up_branch.strip():
+            upstream = up_branch.strip()
 
 
 if __name__ == '__main__':
