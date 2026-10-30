@@ -82,6 +82,14 @@ def parse_numstat(numstat_output: str) -> dict:
                 # If path contains rename notation
                 clean_path = path.split("=>")[-1].strip().rstrip("}").strip()
                 if "{" in path and "}" in path:
+                    prefix = path.split("{")[0]
+                    clean_path = prefix + clean_path
+
+            is_binary = add_s == "-" and del_s == "-"
+            insertions = int(add_s) if not is_binary else 0
+            deletions = int(del_s) if not is_binary else 0
+            file_stats[clean_path] = {
+                "raw_path": path,
 
 
 if __name__ == '__main__':
