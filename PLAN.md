@@ -134,13 +134,13 @@ git-commit-helper/
 
 ## 5. Phase 1 Acceptance Criteria
 
-- [ ] Repository structure strictly matches Section 7 of the specification.
-- [ ] `SKILL.md` follows the Agent Skills specification with valid YAML frontmatter.
-- [ ] `git-status.py` correctly discovers repo root, branch, HEAD, staged/unstaged/untracked files, and rebase/merge states.
-- [ ] `analyze-diff.py` extracts diff statistics, truncates oversized diffs, and redacts sensitive patterns.
-- [ ] `validate-commit.py` validates Conventional Commits, identifies format violations, and outputs constructive suggestions.
-- [ ] `summarize-history.py` extracts scopes, types, and convention patterns from git history.
-- [ ] All Python scripts run on Python 3.8+ standard library without external dependencies.
-- [ ] All unit tests pass cleanly with `pytest`.
-- [ ] Git safety rules (no automatic push, no history rewrite, mandatory user approval) are fully codified in skill instructions.
+- [x] Repository structure strictly matches Section 7 of the specification.
+- [x] `SKILL.md` follows the Agent Skills specification with valid YAML frontmatter.
+- [x] `git-status.py` correctly discovers repo root, branch, HEAD, staged/unstaged/untracked files, and rebase/merge states.
+- [x] `analyze-diff.py` extracts diff statistics, truncates oversized diffs, and redacts sensitive patterns.
+- [x] `validate-commit.py` validates Conventional Commits, identifies format violations, and outputs constructive suggestions.
+- [x] `summarize-history.py` extracts scopes, types, and convention patterns from git history.
+- [x] All Python scripts run on Python 3.8+ standard library without external dependencies.
+- [x] All unit tests pass cleanly with `pytest`.
+- [x] Git safety rules (no automatic push, no history rewrite, mandatory user approval) are fully codified in skill instructions.
 
