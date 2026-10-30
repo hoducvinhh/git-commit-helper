@@ -137,6 +137,12 @@ def validate_commit_message(
                 reconstructed_bang = "!" if raw_bang else ""
                 suggestions.append(
                     f"Use lowercase: '{raw_type}{reconstructed_scope}{reconstructed_bang}: {suggested_desc}'"
+                )
+
+    # 2. Header Length Check
+    if len(header) > max_header_length:
+        warnings.append(
+            f"Commit header length ({len(header)}) exceeds recommended maximum ({max_header_length} chars)."
 
 
 if __name__ == '__main__':
