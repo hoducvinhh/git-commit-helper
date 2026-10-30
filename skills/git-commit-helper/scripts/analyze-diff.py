@@ -108,6 +108,16 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
 
     # Verify git repo
     code, out, _ = run_git_cmd(["rev-parse", "--is-inside-work-tree"], abs_path)
+    if code != 0 or out.strip().lower() != "true":
+        return {
+            "is_git_repository": False,
+            "error": "Not a git repository (or any of the parent directories).",
+        }
+
+    diff_flag = ["--cached"] if is_staged else []
+
+    # 1. Fetch numstat
+    _, numstat_out, _ = run_git_cmd(["diff"] + diff_flag + ["--numstat"], abs_path)
 
 
 if __name__ == '__main__':
