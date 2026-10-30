@@ -25,6 +25,15 @@ SECRET_PATTERNS = [
     # Private Key Headers
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "[REDACTED_PRIVATE_KEY_START]"),
     (re.compile(r"-----END [A-Z ]*PRIVATE KEY-----"), "[REDACTED_PRIVATE_KEY_END]"),
+    # Generic Bearer Tokens
+    (re.compile(r"(?i)\b(Bearer\s+)[A-Za-z0-9_\-\.]{20,}\b"), r"\1[REDACTED_BEARER_TOKEN]"),
+    # Generic password / secret / api-key assignments in quotes
+    (
+        re.compile(
+            r"""(?i)\b(api[_-]?key|secret|password|passwd|auth[_-]?token|access[_-]?token)\s*([:=])\s*(['"])(?:(?!\3).){8,}\3"""
+        ),
+        r"\1\2\3[REDACTED_SECRET]\3",
+    ),
 
 
 if __name__ == '__main__':
