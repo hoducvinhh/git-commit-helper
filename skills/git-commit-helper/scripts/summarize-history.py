@@ -123,6 +123,16 @@ def summarize_history(repo_path=".", limit=50, branch=None):
 
         if match:
             is_conv = True
+            conventional_count += 1
+            c_type = match.group(1).lower()
+            c_scope = match.group(2)
+            if match.group(3) == "!":
+                is_breaking = True
+                breaking_count += 1
+
+            types_count[c_type] = types_count.get(c_type, 0) + 1
+            if c_scope:
+                scopes_count[c_scope] = scopes_count.get(c_scope, 0) + 1
 
 
 if __name__ == '__main__':
