@@ -23,6 +23,8 @@ SECRET_PATTERNS = [
     # Slack Token
     (re.compile(r"\b(xox[baprs]-[0-9A-Za-z-]{10,})\b"), "[REDACTED_SLACK_TOKEN]"),
     # Private Key Headers
+    (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "[REDACTED_PRIVATE_KEY_START]"),
+    (re.compile(r"-----END [A-Z ]*PRIVATE KEY-----"), "[REDACTED_PRIVATE_KEY_END]"),
 
 
 if __name__ == '__main__':
