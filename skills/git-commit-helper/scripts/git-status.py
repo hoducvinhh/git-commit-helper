@@ -189,6 +189,52 @@ def detect_git_status(repo_path="."):
 
             i += 1
 
+    is_clean = (
+        len(staged) == 0
+        and len(unstaged) == 0
+        and len(untracked) == 0
+        and len(conflicted) == 0
+    )
 
-if __name__ == '__main__':
-    pass
+    return {
+        "is_git_repository": True,
+        "repo_root": repo_root.replace("\\", "/"),
+        "branch": branch,
+        "head": head_commit,
+        "is_unborn": is_unborn,
+        "in_progress_state": in_progress,
+        "upstream": upstream,
+        "ahead": ahead,
+        "behind": behind,
+        "is_clean": is_clean,
+        "staged": staged,
+        "unstaged": unstaged,
+        "untracked": untracked,
+        "conflicted": conflicted,
+        "summary": {
+            "staged_count": len(staged),
+            "unstaged_count": len(unstaged),
+            "untracked_count": len(untracked),
+            "conflicted_count": len(conflicted),
+        },
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Inspect Git repository status and output structured JSON."
+    )
+    parser.add_argument(
+        "--repo-path",
+        default=".",
+        help="Path to git repository (default: current directory)",
+    )
+    args = parser.parse_args()
+
+    result = detect_git_status(args.repo_path)
+    print(json.dumps(result, indent=2))
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
