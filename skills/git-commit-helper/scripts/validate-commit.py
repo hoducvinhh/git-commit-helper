@@ -186,7 +186,95 @@ def validate_commit_message(
                 body_lines.append(line)
 
         if body_lines:
+            body = "\n".join(body_lines).strip()
+            if not body:
+                body = None
+
+    if is_breaking and not breaking_desc and parsed_desc:
+        breaking_desc = parsed_desc
+
+    is_valid = len(errors) == 0
+    if strict and len(warnings) > 0:
+        is_valid = False
+
+    return {
+        "valid": is_valid,
+        "header": header,
+        "type": parsed_type,
+        "scope": parsed_scope,
+        "description": parsed_desc,
+        "is_breaking": is_breaking,
+        "breaking_description": breaking_desc,
+        "body": body,
+        "footers": footers,
+        "errors": errors,
+        "warnings": warnings,
+        "suggestions": suggestions,
+    }
 
 
-if __name__ == '__main__':
-    pass
+def main():
+    parser = argparse.ArgumentParser(
+        description="Validate commit messages against Conventional Commits v1.0.0."
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--message",
+        type=str,
+        help="Commit message text to validate",
+    )
+    group.add_argument(
+        "--file",
+        type=str,
+        help="Path to file containing commit message (e.g. .git/COMMIT_EDITMSG)",
+    )
+    parser.add_argument(
+        "--allowed-types",
+        type=str,
+        default=",".join(DEFAULT_ALLOWED_TYPES),
+        help="Comma-separated list of allowed commit types",
+    )
+    parser.add_argument(
+        "--max-header-length",
+        type=int,
+        default=72,
+        help="Max recommended header length (default: 72)",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat warnings as errors",
+    )
+    args = parser.parse_args()
+
+    message = ""
+    if args.message:
+        message = args.message
+    elif args.file:
+        try:
+            with open(args.file, "r", encoding="utf-8") as f:
+                message = f.read()
+        except Exception as e:
+            err_res = {
+                "valid": False,
+                "errors": [f"Failed to read file '{args.file}': {str(e)}"],
+                "warnings": [],
+                "suggestions": [],
+            }
+            print(json.dumps(err_res, indent=2))
+            sys.exit(1)
+
+    allowed = [t.strip() for t in args.allowed_types.split(",") if t.strip()]
+    result = validate_commit_message(
+        message=message,
+        allowed_types=allowed,
+        max_header_length=args.max_header_length,
+        strict=args.strict,
+    )
+
+    print(json.dumps(result, indent=2))
+    sys.exit(0 if result["valid"] else 1)
+
+
+if __name__ == "__main__":
+    main()
