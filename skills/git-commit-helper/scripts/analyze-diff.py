@@ -210,7 +210,66 @@ def analyze_diff(repo_path=".", is_staged=False, max_diff_lines=500, do_redact=T
             total_insertions += s_info["insertions"]
             total_deletions += s_info["deletions"]
             files_result.append({
+                "path": f_path,
+                "status": "modified",
+                "insertions": s_info["insertions"],
+                "deletions": s_info["deletions"],
+                "is_binary": s_info["is_binary"],
+                "diff": "[Binary or non-text content]",
+            })
+
+    return {
+        "is_git_repository": True,
+        "is_staged": is_staged,
+        "stats": {
+            "files_changed": len(files_result),
+            "insertions": total_insertions,
+            "deletions": total_deletions,
+        },
+        "files": files_result,
+        "has_secrets_redacted": any_redacted,
+        "truncated": truncated,
+        "total_diff_lines": total_diff_lines,
+        "shown_diff_lines": accumulated_lines,
+    }
 
 
-if __name__ == '__main__':
-    pass
+def main():
+    parser = argparse.ArgumentParser(
+        description="Analyze git diffs with line limits and secret redaction."
+    )
+    parser.add_argument(
+        "--repo-path",
+        default=".",
+        help="Path to git repository (default: current directory)",
+    )
+    parser.add_argument(
+        "--staged",
+        action="store_true",
+        help="Analyze staged changes instead of unstaged",
+    )
+    parser.add_argument(
+        "--max-diff-lines",
+        type=int,
+        default=500,
+        help="Maximum diff lines to output before truncation (default: 500)",
+    )
+    parser.add_argument(
+        "--no-redact",
+        action="store_true",
+        help="Disable secret and token redaction",
+    )
+    args = parser.parse_args()
+
+    result = analyze_diff(
+        repo_path=args.repo_path,
+        is_staged=args.staged,
+        max_diff_lines=args.max_diff_lines,
+        do_redact=not args.no_redact,
+    )
+    print(json.dumps(result, indent=2))
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
