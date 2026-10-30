@@ -34,6 +34,22 @@ SECRET_PATTERNS = [
         ),
         r"\1\2\3[REDACTED_SECRET]\3",
     ),
+]
+
+
+def run_git_cmd(args, repo_path="."):
+    """Safely executes a git command using subprocess without shell."""
+    try:
+        proc = subprocess.run(
+            ["git"] + args,
+            cwd=repo_path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,
+        )
 
 
 if __name__ == '__main__':
