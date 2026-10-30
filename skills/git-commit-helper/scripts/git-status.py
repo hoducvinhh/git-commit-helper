@@ -110,6 +110,10 @@ def detect_git_status(repo_path="."):
                     except ValueError:
                         pass
 
+    # 8. Parse status porcelain
+    # porcelain=v1 with -z uses NUL as record separator
+    code_st, out_st, _ = run_git_cmd(["status", "--porcelain=v1", "-z", "-u"], repo_root)
+    
 
 
 if __name__ == '__main__':
