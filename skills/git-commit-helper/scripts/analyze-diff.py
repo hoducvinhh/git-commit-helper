@@ -50,6 +50,17 @@ def run_git_cmd(args, repo_path="."):
             errors="replace",
             shell=False,
         )
+        return proc.returncode, proc.stdout, proc.stderr
+    except Exception as e:
+        return -1, "", str(e)
+
+
+def redact_secrets(text: str) -> tuple[str, bool]:
+    """Applies secret patterns to redact sensitive credentials. Returns (redacted_text, was_redacted)."""
+    redacted = False
+    result = text
+    for pattern, replacement in SECRET_PATTERNS:
+        new_result, count = pattern.subn(replacement, result)
 
 
 if __name__ == '__main__':
