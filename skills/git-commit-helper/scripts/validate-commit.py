@@ -173,6 +173,19 @@ def validate_commit_message(
                     breaking_desc = value
             elif in_footer_section:
                 # Continuation line of footer or another footer
+                if line.startswith(" ") or line.startswith("\t"):
+                    # Multiline footer continuation
+                    if footers:
+                        footers[-1]["value"] += " " + line.strip()
+                elif line.strip() == "":
+                    # Blank line within footers
+                    continue
+                else:
+                    footers.append({"token": "NOTE", "value": line.strip()})
+            else:
+                body_lines.append(line)
+
+        if body_lines:
 
 
 if __name__ == '__main__':
