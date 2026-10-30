@@ -143,7 +143,63 @@ def summarize_history(repo_path=".", limit=50, branch=None):
             "subject": c_subject,
             "is_conventional": is_conv,
             "type": c_type,
+            "scope": c_scope,
+            "is_breaking": is_breaking,
+        })
+
+    total = len(commits)
+    rate = round(conventional_count / total, 3) if total > 0 else 0.0
+
+    # Sort distributions descending by frequency
+    sorted_types = dict(sorted(types_count.items(), key=lambda item: item[1], reverse=True))
+    sorted_scopes = dict(sorted(scopes_count.items(), key=lambda item: item[1], reverse=True))
+    sorted_authors = dict(sorted(authors_count.items(), key=lambda item: item[1], reverse=True))
+
+    return {
+        "is_git_repository": True,
+        "is_unborn": False,
+        "total_commits": total,
+        "conventional_count": conventional_count,
+        "conventional_rate": rate,
+        "types_distribution": sorted_types,
+        "scopes_distribution": sorted_scopes,
+        "breaking_count": breaking_count,
+        "authors_distribution": sorted_authors,
+        "commits": commits,
+    }
 
 
-if __name__ == '__main__':
-    pass
+def main():
+    parser = argparse.ArgumentParser(
+        description="Analyze Git commit history conventions, scopes, and types."
+    )
+    parser.add_argument(
+        "--repo-path",
+        default=".",
+        help="Path to git repository (default: current directory)",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=50,
+        help="Maximum commits to analyze (default: 50)",
+    )
+    parser.add_argument(
+        "--branch",
+        type=str,
+        default=None,
+        help="Specific branch or ref to analyze (default: current HEAD)",
+    )
+    args = parser.parse_args()
+
+    result = summarize_history(
+        repo_path=args.repo_path,
+        limit=args.limit,
+        branch=args.branch,
+    )
+    print(json.dumps(result, indent=2))
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
