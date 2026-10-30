@@ -132,6 +132,11 @@ def validate_commit_message(
                 warnings.append(
                     f"Description starts with an uppercase letter '{desc_trimmed[0]}'. Conventional Commits prefers lowercase imperative mood."
                 )
+                suggested_desc = desc_trimmed[0].lower() + desc_trimmed[1:]
+                reconstructed_scope = f"({raw_scope})" if raw_scope else ""
+                reconstructed_bang = "!" if raw_bang else ""
+                suggestions.append(
+                    f"Use lowercase: '{raw_type}{reconstructed_scope}{reconstructed_bang}: {suggested_desc}'"
 
 
 if __name__ == '__main__':
