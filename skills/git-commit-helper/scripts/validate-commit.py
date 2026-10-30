@@ -105,6 +105,17 @@ def validate_commit_message(
             errors.append(f"Commit type '{raw_type}' must be lowercase.")
             suggestions.append(f"Change '{raw_type}' to '{raw_type.lower()}'")
 
+        # Check scope validity
+        if raw_scope is not None:
+            if not raw_scope.strip():
+                errors.append("Scope cannot be empty if parentheses '()' are present.")
+            elif raw_scope != raw_scope.strip():
+                errors.append("Scope cannot contain leading or trailing whitespace.")
+
+        # Check description
+        if not raw_desc or not raw_desc.strip():
+            errors.append("Commit description cannot be empty.")
+
 
 if __name__ == '__main__':
     pass
