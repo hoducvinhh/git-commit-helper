@@ -54,6 +54,10 @@ def detect_git_status(repo_path="."):
     _, repo_root, _ = run_git_cmd(["rev-parse", "--show-toplevel"], abs_path)
     repo_root = repo_root.strip() if repo_root.strip() else abs_path
 
+    # 3. Get git dir (handles .git, submodules, worktrees)
+    _, git_dir_raw, _ = run_git_cmd(["rev-parse", "--git-dir"], repo_root)
+    git_dir = os.path.abspath(os.path.join(repo_root, git_dir_raw.strip())) if git_dir_raw.strip() else None
+
 
 
 if __name__ == '__main__':
