@@ -138,6 +138,11 @@ def summarize_history(repo_path=".", limit=50, branch=None):
             "hash": c_hash[:8],
             "full_hash": c_hash,
             "author": c_author,
+            "email": c_email,
+            "date": c_date,
+            "subject": c_subject,
+            "is_conventional": is_conv,
+            "type": c_type,
 
 
 if __name__ == '__main__':
