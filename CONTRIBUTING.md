@@ -19,7 +19,7 @@ Please be respectful, constructive, and considerate of all contributors and user
 
 2. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-org/git-commit-helper.git
+   git clone https://github.com/hoducvinhh/git-commit-helper.git
    cd git-commit-helper
    ```
 
