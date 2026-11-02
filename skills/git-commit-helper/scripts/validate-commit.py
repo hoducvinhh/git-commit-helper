@@ -7,6 +7,8 @@ Checks types, scopes, breaking changes, header lengths, imperative moods,
 body separation, and footer formats, providing structured error reports and fixes.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import re

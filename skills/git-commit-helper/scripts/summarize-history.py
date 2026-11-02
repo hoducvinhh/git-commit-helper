@@ -6,6 +6,8 @@ Extracts recent commits, analyzes compliance with Conventional Commits, identifi
 top types and scopes used in the repository, and provides a structured history summary.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os

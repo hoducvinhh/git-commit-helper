@@ -7,6 +7,8 @@ in-progress operations (merge, rebase, cherry-pick), and categorized files
 (staged, unstaged, untracked, conflicted). Outputs structured JSON.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os

@@ -7,6 +7,8 @@ renamed files, enforces max line limits to prevent LLM context overflow, and
 redacts sensitive credentials/tokens from diff hunks.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
