@@ -31,8 +31,10 @@ htmlcov/
 .tox/
 .nox/
 
-# Virtual environments
+# Virtual environments & secrets
 .env
+.env.*
+.env.local
 .venv
 env/
 venv/
@@ -48,3 +50,29 @@ venv.bak/
 *~
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# Logs & temp files
+*.log
+*.tmp
+*.bak
+temp/
+tmp/
+scratch/
+
+# Personal & internal planning/notes (keep private)
+PLAN.md
+plan.md
+*PLAN*.md
+*plan*.md
+TODO.md
+todo.md
+NOTES.md
+notes.md
+
+# AI assistant / Agent local states & workspaces
+.gemini/
+.agents/
+.claude/
+.cursor/
+.windsurf/

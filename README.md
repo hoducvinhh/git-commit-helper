@@ -35,7 +35,6 @@ git-commit-helper/
 ├── SECURITY.md                         # Security policy & secret protection
 ├── ROADMAP.md                          # Future development roadmap
 ├── pyproject.toml                      # Pytest & package configuration
-├── PLAN.md                             # Phase 1 implementation plan
 │
 ├── skills/
 │   └── git-commit-helper/
