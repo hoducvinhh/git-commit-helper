@@ -159,19 +159,246 @@ python skills/git-commit-helper/scripts/summarize-history.py [--limit 50] [--rep
 
 ---
 
-## Agent Usage & Safety Boundary
+## Detailed User Guide / Hướng dẫn sử dụng chi tiết
 
-When installed as an Agent Skill in an AI assistant (Antigravity, Claude, Cursor, Copilot, etc.):
+### Mode 1: AI Agent Skill Integration (Recommended)
 
-1. The agent executes `git-status.py` to inspect modified files.
-2. The agent runs `analyze-diff.py --staged` (or unstaged) to inspect changes.
-3. If changes contain unrelated modifications, the agent suggests logical commit splitting.
-4. The agent crafts a Conventional Commit message and validates it using `validate-commit.py`.
-5. **Human-in-the-Loop Gate**: The agent presents the proposed commit message and list of files to the user and asks for explicit confirmation before staging or committing.
-6. Forbidden actions:
-   - NEVER run `git push` without explicit user request.
-   - NEVER run `git commit --amend`, `git rebase`, or `git reset --hard` autonomously.
-   - NEVER run `git add .` or stage sensitive files (`.env`, credentials, secrets).
+`git-commit-helper` is structured as a native Agent Skill. It empowers AI coding assistants (Google Antigravity, Claude Code, Cursor, Windsurf, GitHub Copilot Workspace, etc.) with deterministic Git analysis and safety rules.
+
+#### Installation into AI Assistants
+
+##### Google Antigravity / Gemini Agent
+- **Workspace-level (Current project only):**
+  Copy or symlink the skill directory to `.gemini/skills/`:
+  ```bash
+  # Windows PowerShell
+  New-Item -ItemType Directory -Force -Path .gemini\skills
+  Copy-Item -Recurse skills\git-commit-helper .gemini\skills\git-commit-helper
+  ```
+- **Global-level (Available across all projects):**
+  Copy the skill to your global Antigravity skills folder:
+  ```bash
+  # Windows PowerShell
+  Copy-Item -Recurse skills\git-commit-helper "$HOME\.gemini\antigravity\skills\git-commit-helper"
+  ```
+
+##### Claude Code / Cursor / Windsurf
+Add or symlink `skills/git-commit-helper` into your agent's custom instructions or skills folder (e.g. `.agents/skills/git-commit-helper` or configure your system prompt to reference [`skills/git-commit-helper/SKILL.md`](skills/git-commit-helper/SKILL.md)).
+
+#### Interacting with the AI Agent (Example Prompts)
+
+Once installed, simply chat with your AI assistant using natural language:
+
+| Goal | Example Prompt |
+| :--- | :--- |
+| **Standard Commit** | *"Review my changes and commit them with a conventional commit message."* |
+| **Commit Splitting** | *"I've worked on both authentication and database migration. Split these changes into logical atomic commits."* |
+| **Secret & Stray Inspection** | *"Inspect my staged files for any credentials, `.env` files, or stray build artifacts."* |
+| **Draft Pull Request** | *"Summarize the commits on this branch and create a detailed PR description."* |
+| **Check Repo Conventions** | *"Analyze the last 30 commits in this repository and tell me our commit format conventions."* |
+
+#### The 9-Step Safe Agent Workflow in Action
+
+When an AI assistant executes this skill, it follows a strict protocol:
+```
+[1. Discover State] ──> [2. Summarize History] ──> [3. Analyze Diffs]
+          │
+          ▼
+[4. Detect Secrets] ──> [5. Group Changes] ────> [6. Formulate Commits]
+          │
+          ▼
+[7. Validate Message] ─> [8. Human Authorization] ─> [9. Execute Commit]
+```
+
+1. **State Discovery:** Runs `git-status.py` to get branch, uncommitted files, and verify no rebase/merge conflicts exist.
+2. **History Check:** Runs `summarize-history.py` to adapt to your repository's existing scopes (`api`, `ui`, `core`).
+3. **Diff Analysis:** Runs `analyze-diff.py` to examine line counts, file types, and modifications.
+4. **Secret Redaction:** Auto-detects sensitive strings (passwords, tokens, private keys) and alerts you immediately.
+5. **Change Grouping:** Isolates unrelated concerns into separate atomic commits.
+6. **Formulation:** Drafts clear commit messages in accordance with [Conventional Commits v1.0.0](https://www.conventionalcommits.org).
+7. **Validation:** Runs `validate-commit.py` to verify grammar, length, type, and breaking change syntax.
+8. **Human Authorization (Crucial Gate):** The agent **never** commits autonomously. It displays a preview card with:
+   - Target files to stage
+   - Proposed commit message
+   - Breaking change notes
+   And asks: *"Do you want me to proceed with this commit? [y/N]"*
+9. **Execution:** Runs `git add <specific-files>` and `git commit -m "<validated-message>"` only after your explicit confirmation.
+
+---
+
+### Mode 2: Standalone CLI Usage
+
+All helper scripts in `skills/git-commit-helper/scripts/` run on standard Python 3.8+ without third-party packages. They output structured JSON, making them ideal for custom scripts or terminal use.
+
+#### A. Inspect Repository State
+```bash
+python skills/git-commit-helper/scripts/git-status.py [--repo-path /path/to/repo]
+```
+
+#### B. Analyze Diffs with Secret Redaction
+```bash
+# Analyze unstaged working tree changes
+python skills/git-commit-helper/scripts/analyze-diff.py
+
+# Analyze staged changes with a maximum line cutoff
+python skills/git-commit-helper/scripts/analyze-diff.py --staged --max-diff-lines 300
+
+# Scan an external repository path
+python skills/git-commit-helper/scripts/analyze-diff.py --repo-path "C:/projects/my-app" --staged
+```
+
+#### C. Validate Commit Messages
+```bash
+# Direct message string
+python skills/git-commit-helper/scripts/validate-commit.py --message "feat(auth): implement refresh token rotation"
+
+# Enforce strict mode (warnings treated as errors)
+python skills/git-commit-helper/scripts/validate-commit.py --message "fix: update button styling." --strict
+
+# Custom allowed commit types
+python skills/git-commit-helper/scripts/validate-commit.py --message "release(v1.0): deploy" --allowed-types "feat,fix,docs,release"
+```
+
+#### D. Discover Repository Commit Conventions
+```bash
+# Analyze last 50 commits on the current branch
+python skills/git-commit-helper/scripts/summarize-history.py --limit 50
+
+# Analyze a specific branch
+python skills/git-commit-helper/scripts/summarize-history.py --branch main --limit 100
+```
+
+---
+
+### Mode 3: Local Git Hooks & CI/CD Integration
+
+#### Set Up a Local `commit-msg` Hook
+Enforce Conventional Commits locally for all developers by adding a git hook:
+
+Create `.git/hooks/commit-msg` (or `.git/hooks/commit-msg` in Linux/macOS/Git Bash):
+```bash
+#!/usr/bin/env bash
+# .git/hooks/commit-msg
+python skills/git-commit-helper/scripts/validate-commit.py --file "$1" --strict
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Commit rejected: Message does not comply with Conventional Commits v1.0.0."
+  echo "👉 Example: feat(auth): add OAuth2 provider support"
+  exit 1
+fi
+```
+Make it executable on Unix/macOS:
+```bash
+chmod +x .git/hooks/commit-msg
+```
+
+#### GitHub Actions Workflow Example
+Validate pull request commits automatically:
+```yaml
+name: Validate Commits
+on: [pull_request]
+
+jobs:
+  commit-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate PR Title / Latest Commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          python skills/git-commit-helper/scripts/validate-commit.py --message "$COMMIT_MSG" --strict
+```
+
+---
+
+## Hướng dẫn sử dụng chi tiết (Tiếng Việt)
+
+### 1. Dùng như Kỹ năng cho Trợ lý AI (Antigravity, Claude Code, Cursor)
+
+Dự án này sinh ra với mục tiêu cốt lõi là làm **Agent Skill** giúp các trợ lý AI lập trình làm việc với Git một cách kỷ luật, an toàn và chuyên nghiệp.
+
+#### Cài đặt Skill vào AI Assistant:
+* **Cho Google Antigravity / Gemini:**
+  Copy thư mục `skills/git-commit-helper` vào thư mục skills:
+  - Cho một dự án cụ thể: `.gemini/skills/git-commit-helper`
+  - Cho toàn máy tính (global): `%USERPROFILE%\.gemini\antigravity\skills\git-commit-helper`
+* **Cho Claude Code / Cursor / Windsurf:**
+  Liên kết thư mục `skills/git-commit-helper` hoặc khai báo đường dẫn tới file [`SKILL.md`](skills/git-commit-helper/SKILL.md) trong phần cấu hình system prompt / rules của dự án.
+
+#### Các câu lệnh mẫu khi chat với AI:
+1. **Commit thay đổi:**
+   > *"Kiểm tra thay đổi hiện tại và commit giúp tôi theo chuẩn Conventional Commits."*
+2. **Quét dữ liệu nhạy cảm:**
+   > *"Kiểm tra git diff xem có dính file .env, mật khẩu hay API key nào không."*
+3. **Chia nhỏ commit (Atomic Commits):**
+   > *"Tôi vừa sửa giao diện vừa sửa API, hãy phân tích và tách thành các commit riêng biệt hợp lý."*
+4. **Tạo mô tả Pull Request (PR):**
+   > *"Tóm tắt các commit trên branch này và viết giúp tôi nội dung Pull Request hoàn chỉnh."*
+
+#### Cơ chế an toàn (Safety Boundary):
+* AI **không bao giờ** tự ý commit hay push khi chưa có sự đồng ý của bạn.
+* AI sẽ hiển thị bản xem trước: danh sách file sẽ stage, commit message dự kiến.
+* Bạn xác nhận đồng ý (`OK`, `Commit đi`) thì AI mới thực thi lệnh Git.
+* Nghiêm cấm các lệnh nguy hiểm: không bao giờ tự ý chạy `git push --force`, `git reset --hard` hay `git add .` bừa bãi.
+
+---
+
+### 2. Sử dụng trực tiếp từ dòng lệnh (CLI Scripts)
+
+Tất cả các script trong thư mục `skills/git-commit-helper/scripts/` đều chạy được độc lập với Python có sẵn trên máy (không cần cài thêm thư viện):
+
+#### Kiểm tra trạng thái Git (JSON có cấu trúc):
+```bash
+python skills/git-commit-helper/scripts/git-status.py
+```
+> Trả về danh sách file staged, unstaged, untracked, branch hiện tại, và trạng thái nếu đang merge/rebase dở.
+
+#### Phân tích Diff và tự che giấu Secret/Mật khẩu:
+```bash
+# Xem thay đổi trong thư mục làm việc (unstaged)
+python skills/git-commit-helper/scripts/analyze-diff.py
+
+# Xem thay đổi đã thêm vào git add (staged), giới hạn 300 dòng
+python skills/git-commit-helper/scripts/analyze-diff.py --staged --max-diff-lines 300
+```
+> Tự động phát hiện và thay thế password, AWS token, GitHub token bằng `[REDACTED_SECRET]`.
+
+#### Kiểm tra cú pháp commit message:
+```bash
+# Kiểm tra message trực tiếp
+python skills/git-commit-helper/scripts/validate-commit.py --message "feat(user): add avatar upload feature"
+
+# Chế độ nghiêm ngặt (báo lỗi cả warning)
+python skills/git-commit-helper/scripts/validate-commit.py --message "fix: fix bug." --strict
+```
+
+#### Khám phá quy chuẩn commit của repository:
+```bash
+python skills/git-commit-helper/scripts/summarize-history.py --limit 30
+```
+> Quét 30 commit gần nhất, liệt kê các scope hay dùng (`auth`, `ui`, `core`), tỷ lệ tuân thủ Conventional Commits để bạn commit theo đúng phong cách chung của team.
+
+---
+
+### 3. Tích hợp Git Hook tự động chặn commit sai chuẩn
+Tạo file `.git/hooks/commit-msg` trong repository của bạn:
+```bash
+#!/usr/bin/env bash
+python skills/git-commit-helper/scripts/validate-commit.py --file "$1" --strict
+
+if [ $? -ne 0 ]; then
+  echo "❌ Commit bị từ chối: Message không đúng chuẩn Conventional Commits!"
+  echo "Ví dụ đúng: feat(auth): add google oauth login"
+  exit 1
+fi
+```
+Khi bạn hoặc thành viên trong team gõ `git commit`, hook sẽ tự động chạy script kiểm tra; nếu sai chuẩn, commit sẽ bị chặn ngay lập tức.
 
 ---
 
